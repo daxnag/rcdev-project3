@@ -66,6 +66,31 @@ body {
   }
 }
 
+.annotation-2 {
+  &::before {
+    content: '2';
+  }
+}
+
+.annotation-3 {
+  &::before {
+    content: '3';
+  }
+}
+
+.annotation-4 {
+  &::before {
+    content: '4';
+  }
+}
+
+.annotation-5 {
+  &::before {
+    content: '5';
+  }
+}
+
+
 #number {
   position: absolute;
   z-index: -1;

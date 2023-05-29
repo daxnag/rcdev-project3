@@ -15,14 +15,15 @@ import {
     TemporalAAPlugin,
     AnisotropyPlugin,
     GammaCorrectionPlugin,
-
+    CanvasTexture,
     addBasePlugins,
-    ITexture, TweakpaneUiPlugin, AssetManagerBasicPopupPlugin, CanvasSnipperPlugin,
+    Vector3, 
+    DoubleSide, 
+    AssetManagerBasicPopupPlugin,
 
     IViewerPlugin,
     // Color, // Import THREE.js internals
     // Texture, // Import THREE.js internals
-    Object3D
 } from "webgi";
 
 import gsap from 'gsap';
@@ -39,26 +40,12 @@ async function setupViewer(){
 
     // Add some plugins
     const manager = await viewer.addPlugin(AssetManagerPlugin)
-    const camera = viewer.scene.activeCamera
-    const position = camera.position
-    const target = camera.target
+    const camera = viewer.scene.activeCamera;
+    const position = camera.position;
+    const target = camera.target;
     // Add a popup(in HTML) with download progress when any asset is downloading.
     await viewer.addPlugin(AssetManagerBasicPopupPlugin)
 
-    // Add plugins individually.
-    // await viewer.addPlugin(GBufferPlugin)
-    // await viewer.addPlugin(new ProgressivePlugin(32))
-    // await viewer.addPlugin(new TonemapPlugin(!viewer.useRgbm))
-    // await viewer.addPlugin(GammaCorrectionPlugin)
-    // await viewer.addPlugin(SSRPlugin)
-    // await viewer.addPlugin(SSAOPlugin)
-    // await viewer.addPlugin(DiamondPlugin)
-    // await viewer.addPlugin(FrameFadePlugin)
-    // await viewer.addPlugin(GLTFAnimationPlugin)
-    // await viewer.addPlugin(GroundPlugin)
-    // await viewer.addPlugin(BloomPlugin)
-    // await viewer.addPlugin(TemporalAAPlugin)
-    // await viewer.addPlugin(AnisotropyPlugin)
 
     // or use this to add all main ones at once.
     await addBasePlugins(viewer)
@@ -79,51 +66,67 @@ async function setupViewer(){
     const tl = gsap.timeline();
     let needsUpdate = true;
 
-    const canvas = document.getElementById('number');
+    //const annotation = document.querySelector(".annotation");
+
     
-    const ctx = canvas.getContext('2d');
+    // const spriteMaterial = viewer.createMaterial('basic',{
+    //     map: numberTexture,
+    //     alphaTest: 0.5,
+    //     transparent: true,
+    //     depthTest: false,
+    //     depthWrite: false,
+    //     side: DoubleSide,
+    // });
 
-    const x = 32;
-    const y = 32;
-    const radius = 30;
-    const startAngle = 0;
-    const endAngle = Math.PI * 2;
-
-    ctx.fillStyle = 'rgb(0, 0, 0)';
-    ctx.beginPath();
-    ctx.arc(x, y, radius, startAngle, endAngle);
-    ctx.fill();
-
-    ctx.strokeStyle = 'rgb(255, 255, 255)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, startAngle, endAngle);
-    ctx.stroke();
-
-    ctx.fillStyle = 'rgb(255, 255, 255)';
-    ctx.font = '32px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('1', x, y);
-
-    const numberTexture = new THREE.CanvasTexture(
-        document.querySelector('#number')
-    );
+    //const annotationPosition = new Vector3(5,1,0);
     
-    const spriteMaterial = new THREE.SpriteMaterial({
-        map: numberTexture,
-        alphaTest: 0.5,
-        transparent: true,
-        depthTest: false,
-        depthWrite: false
-    });
-    
-    const sprite = new Object3D(spriteMaterial);
-    sprite.position.set(250, 250, 250);
-    sprite.scale.set(35, 35, 1);
-
-
     viewer.scene.setDirty();
+
+    function updateScreenPosition() {
+    
+        const vector1 = new Vector3(-0.6365125773, -0.6722497739, -0.4513748276);
+        const vector2 = new Vector3(-0.1082163274, 1.2124056976, 1.0748475763);
+        const vector3 = new Vector3(1.1172132224, -0.6924056976, -0.0148325413);
+        const vector4 = new Vector3(1.0472162370, 1.1024026976, 1.0048415763);
+        const vector5 = new Vector3(-0.1272162274, 2.2424056976, -0.6245475763);
+        
+        const annotation1 = document.querySelector('.annotation-1');
+        const annotation2 = document.querySelector('.annotation-2');   
+        const annotation3 = document.querySelector('.annotation-3');   
+        const annotation4 = document.querySelector('.annotation-4');   
+        const annotation5 = document.querySelector('.annotation-5');   
+
+        loadAnnotationObject(annotation1, vector1)
+        loadAnnotationObject(annotation2, vector2)
+        loadAnnotationObject(annotation3, vector3)
+        loadAnnotationObject(annotation4, vector4)
+        loadAnnotationObject(annotation5, vector5)
+    } 
+
+    function loadAnnotationObject(annotation, vector) {
+        const canvas = viewer.canvas;
+
+        vector.project(camera.cameraObject);
+    
+        vector.x = Math.round(
+          (0.5 + vector.x / 2) * (canvas.width / viewer.renderer.displayCanvasScaling)
+        );
+        vector.y = Math.round(
+          (0.5 - vector.y / 2) * (canvas.height / viewer.renderer.displayCanvasScaling)
+        );
+    
+        annotation.style.top = `${vector.y}px`;
+        annotation.style.left = `${vector.x}px`;
+    }
+
+    let expanded = false;
+
+    
+    viewer.addEventListener("postRender", () => {
+        if(expanded)
+            updateScreenPosition();
+        //updateAnnotationOpacity();
+    });
 
     document.querySelector('.explore')?.addEventListener('click', () => {
         tl.to(position, {x: -6.3269533864, y: 4.0538719781 , z: -7.0667129458, duration: 1, onUpdate})
@@ -132,11 +135,14 @@ async function setupViewer(){
     })
 
     async function expandHouse() {
+
         gltfAnims.animationSpeed = 2;
         gltfAnims.loopAnimations = false;
 
         await timeout(2500)
-        await gltfAnims.playAnimation() ;
+        await gltfAnims.playAnimation();
+        expanded = true;
+        //updateScreenPosition();
     }
 
     
