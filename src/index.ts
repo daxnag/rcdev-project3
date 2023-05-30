@@ -87,8 +87,8 @@ async function setupViewer(){
         const vector1 = new Vector3(-0.6365125773, -0.6722497739, -0.4513748276);
         const vector2 = new Vector3(-0.1082163274, 1.2124056976, 1.0748475763);
         const vector3 = new Vector3(1.1172132224, -0.6924056976, -0.0148325413);
-        const vector4 = new Vector3(1.0472162370, 1.1024026976, 1.0048415763);
-        const vector5 = new Vector3(-0.1272162274, 2.2424056976, -0.6245475763);
+        const vector4 = new Vector3(1.0472162370, 1.1024026976, 0.220415763);
+        const vector5 = new Vector3(-1.1272162274, 1.0424056976, -1.0045425763);
         
         const annotation1 = document.querySelector('.annotation-1');
         const annotation2 = document.querySelector('.annotation-2');   
@@ -117,7 +117,15 @@ async function setupViewer(){
     
         annotation.style.top = `${vector.y}px`;
         annotation.style.left = `${vector.x}px`;
+
+        
     }
+
+    document.querySelector('.annotation-2')?.addEventListener('click', () => {
+        console.log('here');
+    })
+
+
 
     let expanded = false;
 
