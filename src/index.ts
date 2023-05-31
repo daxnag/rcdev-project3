@@ -27,7 +27,6 @@ import {
 } from "webgi";
 
 import gsap from 'gsap';
-import  * as THREE  from 'three';
 
 import "./styles.css";
 
@@ -60,8 +59,6 @@ async function setupViewer(){
 // Play all animations
 
     await manager.addFromPath("./assets/house.glb")
-
-    await timeout(1000) // wait 1 sec
     
     const tl = gsap.timeline();
 
