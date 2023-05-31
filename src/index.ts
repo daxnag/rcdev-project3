@@ -140,7 +140,6 @@ async function setupViewer(){
     viewer.scene.setDirty();
 
     function updateScreenPosition() {
-
         let c = 1;
         annotations.forEach((item) => {
             loadAnnotationObject(document.querySelector('.annotation-'+c.toString()), new Vector3(item.ptx, item.pty, item.ptz));
@@ -163,10 +162,6 @@ async function setupViewer(){
         annotation.style.top = `${vector.y}px`;
         annotation.style.left = `${vector.x}px`;
     }
-
-    document.querySelector('.annotation-2')?.addEventListener('click', () => {
-        console.log('here');
-    })
 
     function createAnnotations() {
         let c = 1;
